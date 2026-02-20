@@ -5,33 +5,25 @@ class wireguard::params {
   $config_dir_purge   = false
   $manage_package     = true
   $config_dir         = '/etc/wireguard'
+  $gpg_key            = 'https://download.copr.fedorainfracloud.org/results/jdoss/wireguard/pubkey.gpg'
   case $facts['os']['name'] {
     'RedHat', 'CentOS', 'VirtuozzoLinux': {
       $manage_repo    = true
       $package_name   = ['wireguard-dkms', 'wireguard-tools']
-      $repo_url       = 'https://copr.fedorainfracloud.org/coprs/jdoss/wireguard/repo/epel-7/jdoss-wireguard-epel-7.repo'
+      $base_url       = "https://download.copr.fedorainfracloud.org/results/jdoss/wireguard/epel-${facts['os']['release']['major']}-\$basearch/"
     }
-    'Ubuntu': {
+    'Fedora': {
+      $manage_repo    = true
+      $package_name   = ['wireguard-dkms', 'wireguard-tools']
+      $base_url       = 'https://download.copr.fedorainfracloud.org/results/jdoss/wireguard/fedora-$releasever-$basearch/'
+    }
+    'Ubuntu', 'Debian': {
       $manage_repo    = false
-      $package_name   = ['wireguard']
-      $repo_url       = ''
-    }
-    'Debian': {
-      case $facts['os']['release']['major'] {
-        '11': {
-          $manage_repo  = false
-          $package_name = ['wireguard']
-          $repo_url     = ''
-        }
-        default: {
-          $manage_repo    = true
-          $package_name   = ['wireguard', 'wireguard-dkms', 'wireguard-tools']
-          $repo_url       = 'http://deb.debian.org/debian/'
-        }
-      }
+      $package_name   = ['wireguard', 'wireguard-tools']
     }
     default: {
-      warning("Unsupported OS family, couldn't configure package automatically")
+      $manage_repo    = false
+      $package_name   = 'wireguard'
     }
   }
 }

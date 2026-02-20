@@ -1,17 +1,16 @@
 # @summary
 #  Class configures files and directories for wireguard
-# @param config_dir
-#   Path to wireguard configuration files
-# @param config_dir_mode
-#   The config_dir access mode bits
+# @api private
+#
 class wireguard::config (
-  Stdlib::Absolutepath $config_dir,
-  String               $config_dir_mode,
-  Boolean              $config_dir_purge,
+  $config_dir       = $wireguard::config_dir,
+  $config_dir_mode  = $wireguard::config_dir_mode,
+  $config_dir_purge = $wireguard::config_dir_purge,
 ) {
+  assert_private()
 
   if $config_dir_purge {
-    file {$config_dir:
+    file { $config_dir:
       ensure  => 'directory',
       mode    => $config_dir_mode,
       owner   => 'root',
@@ -21,7 +20,7 @@ class wireguard::config (
       purge   => true,
     }
   } else {
-    file {$config_dir:
+    file { $config_dir:
       ensure => 'directory',
       mode   => $config_dir_mode,
       owner  => 'root',
